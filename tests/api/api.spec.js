@@ -44,4 +44,48 @@ test.describe.parallel("API Testing", () => {
         expect(responseBody.id).toBe(1000)
         expect(responseBody.createdAt).toBeTruthy()
     })
+
+    test("POST Request - Login", async ({ request }) => {
+        const response = await request.post(`${baseUrl}/login`, {
+            data: {
+                email: "eve.holt@reqres.in",
+                password: "cityslicka"
+            }
+        })
+
+        const responseBody = JSON.parse(await response.text())
+        
+        expect(response.status()).toBe(200)
+        expect(responseBody.token).toBeTruthy()
+    })
+
+    test("POST Request - Login Fail", async ({ request }) => {
+        const response = await request.post(`${baseUrl}/login`, {
+            data: {
+                email: "eve.holt@reqres.in",
+            }
+        })
+
+        const responseBody = JSON.parse(await response.text())
+        
+        expect(response.status()).toBe(400)
+        expect(responseBody.token).toBeFalsy()
+        expect(responseBody.error).toBe("Missing password")
+    })
+
+    test("PUT Request - Update User", async ({ request }) => {
+        const response = await request.put(`${baseUrl}/users/2`, {
+            data: {
+                name: "new name",
+                job: "new job",
+            }
+        })
+
+        const responseBody = JSON.parse(await response.text())
+        
+        expect(response.status()).toBe(200)
+        expect(responseBody.name).toBe("new name")
+        expect(responseBody.job).toBe("new job")
+        expect(responseBody.updatedAt).toBeTruthy()
+    })
 })
